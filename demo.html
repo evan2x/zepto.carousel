@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimnm-scale=1.0, maximnm-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+        }
+        .container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            height: 12.5rem;
+        }
+        .slider-item > img {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="slider-item">
+            <img src="http://b.zol-img.com.cn/desk/bizhi/image/6/960x600/1422930120986.jpg" alt="" />
+        </div>
+        <div class="slider-item">
+            <img src="http://b.zol-img.com.cn/desk/bizhi/image/6/960x600/14229301368.jpg" alt="" />
+        </div>
+        <div class="slider-item">
+            <img src="http://b.zol-img.com.cn/desk/bizhi/image/6/960x600/1422929995661.jpg" alt="" />
+        </div>
+    </div>
+    <script src="lib/zepto.js"></script>
+    <script src="zepto.slider.min.js"></script>
+    <script>
+        (function( $ ){
+            $(function(){
+                $('.container').slider({
+                    autoplay: false
+                });
+            });
+        })(Zepto);
+    </script>
+</body>
+</html>

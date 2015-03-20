@@ -1,0 +1,27 @@
+{
+  "name": "zepto.slider",
+  "version": "0.0.1-alpha",
+  "description": "移动端slider",
+  "main": "zepto.slider.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/evan2x/zepto.slider.git"
+  },
+  "keywords": [
+    "slider"
+  ],
+  "author": "evan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/evan2x/zepto.slider/issues"
+  },
+  "homepage": "https://github.com/evan2x/zepto.slider",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-rename": "^1.2.0",
+    "gulp-uglify": "^1.1.0"
+  }
+}
