@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimnm-scale=1.0, maximnm-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <style>
         body {
             margin: 0;
         }
-        .container {
+        #slider,
+        #slider2 {
             position: relative;
             width: 100%;
             overflow: hidden;
@@ -20,7 +21,8 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <h2>默认</h2>
+    <div id="slider">
         <div class="slider-item">
             <img src="http://b.zol-img.com.cn/desk/bizhi/image/6/960x600/1422930120986.jpg" alt="" />
         </div>
@@ -31,13 +33,29 @@
             <img src="http://b.zol-img.com.cn/desk/bizhi/image/6/960x600/1422929995661.jpg" alt="" />
         </div>
     </div>
+    <h2>延迟加载</h2>
+    <div id="slider2">
+        <div class="slider-item">
+            <img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/960x600/1422930120986.jpg" alt="" />
+        </div>
+        <div class="slider-item">
+            <img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/960x600/14229301368.jpg" alt="" />
+        </div>
+        <div class="slider-item">
+            <img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/960x600/1422929995661.jpg" alt="" />
+        </div>
+    </div>
     <script src="lib/zepto.js"></script>
     <script src="zepto.slider.min.js"></script>
     <script>
         (function( $ ){
             $(function(){
-                $('.container').slider({
-                    autoplay: false
+                $('#slider').slider({
+                    autoplay: true
+                });
+
+                $('#slider2').slider({
+                    lazyload: true
                 });
             });
         })(Zepto);

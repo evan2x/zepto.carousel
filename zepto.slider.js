@@ -1,19 +1,21 @@
 /**
- * @description  slider插件，暂时没写lazyload功能
+ * @desc  slider插件
  * @author evan(evan2zaw@gmail.com)
  * @date 2015/02/11
- * @version 0.0.1-alpha
- * @dependencies Zepto
+ * @update 2015/4/22
+ * @version 0.0.2-alpha
+ * @license MIT
  */
 
-(function( $ ){
+(function( $, win ){
     'use strict';
 
-    var VERSION = '0.0.1-alpha',
+    var VERSION = '0.0.2-alpha',
         nsid = 0,
-        $win = $(window),
+        $win = $(win),
         prefix = $.fx.cssPrefix,
-        _slice = Array.prototype.slice;
+        _slice = Array.prototype.slice,
+        placeholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvIAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==';
 
     function Slider( $el, opts ){
         opts || (opts = {});
@@ -23,14 +25,15 @@
             $el: $el,
             items: $el.children(),
             lazyload: opts.lazyload || false,
+            placeholder: opts.placeholder || placeholder,
+            attribute: opts.attribute || 'data-src',
             autoplay: opts.autoplay || false,
             interval: opts.interval || 3000,
             index: opts.index || 0,
             duration: opts.duration || 600,
-            start: {},
-            ns: 'slider' + (nsid++)
+            start: {}
         });
-
+        this.eventName = 'onorientationchange' in win ? 'orientationchange' : 'resize' + '.slider' + (nsid++);
         this._init();
     }
 
@@ -45,24 +48,113 @@
             that.container = document.createElement('div');
             that.items.wrapAll(that.container);
 
-            that.refresh();
             that._initEvents();
 
             //开启自动滑动
             that.autoplay && that._play();
-            that._toIndex();
+            if( that.lazyload ){
+                var selector = 'img['+ that.attribute +']';
+
+                that.items
+                    .find(selector)
+                    .prop('src', that.placeholder);
+            }
+            that.refresh();
         },
         /**
          * 初始化事件绑定
          * @private
          */
         _initEvents: function(){
-            var that = this;
+            var that = this,
+                /**
+                 * touchstart事件句柄   
+                 * @event 
+                 * @param  {Object} e 
+                 */
+                start = function(e){
+                    var touche = e.touches[0];
+
+                    $.extend(that.start, {
+                        x: touche.pageX,
+                        y: touche.pageY,
+                        time: Date.now()
+                    });
+
+                    that.move = {};
+                },
+                /**
+                 * touchmove事件句柄
+                 * @event
+                 * @param  {Object} e 
+                 */
+                move = function(e){
+                    var touche = e.touches[0],
+                        start = that.start,
+                        move = that.move;
+
+                    move.x = touche.pageX - start.x;
+                    move.y = touche.pageY - start.y;
+
+                    // 当x方向移动值大于y方向的，才认为是左右滑动
+                    if( Math.abs(move.x) > Math.abs(move.y) ){
+                        if( that.timer != null ){
+                            clearTimeout(that.timer);
+                            that.timer = null;
+                        }
+
+                        if( !that.moving ){
+                            var dir = move.x >= 0 ? 1 : -1;
+                            that._loopItem(dir, that.index);
+                        }
+                        that.moving = true;
+                        translate3d(that.container, 0, that.posX + move.x);
+                    } else {
+                        e.preventDefault();
+                    }
+                },
+                /**
+                 * touchend事件句柄
+                 * @event
+                 * @param  {Object} e 
+                 */
+                end = function(e){
+                    var diff = 0,
+                        absMoveX = Math.abs(that.move.x),
+                        time = Date.now() - that.start.time;
+
+                    // 滑动持续时间小于200ms，判定为快速滑动
+                    if( time < 200 ){
+                        //快速滑动时候，只要移动的距离超过30px则视为需要变更
+                        diff = absMoveX > 30 ? 1 : 0;
+                    } else {
+                        //慢速滑动，移动的距离超过总距离的50%则视为需要变更
+                        diff = Math.round(absMoveX / that.width);
+                    }
+
+                    if( diff ){
+                        if( that.move.x > 0 ){
+                            that.index -= 1;
+                        } else {
+                            that.index += 1;
+                        }
+                    }
+                    that._toIndex(that.duration);
+
+                    that.moving = false;
+                },
+                /**
+                 * 视窗宽高变化时触发的事件句柄
+                 */
+                resize = function(){
+                    that.index = that.getIndex();
+                    that.refresh();
+                };
 
             that.$el.on({
-                touchstart: $.proxy(that._start, that),
-                touchmove: $.proxy(that._move, that),
-                touchend: $.proxy(that._end, that)
+                touchstart: start,
+                touchmove: move,
+                touchend: end
             })
             .on($.fx.transitionEnd, function(){
                 if( that.autoplay && that.timer == null ){
@@ -70,22 +162,8 @@
                 }
             });
 
-            $win.on(
-                'resize.' + that.ns,
-                $.proxy(that._resize, that)
-            );
+            $win.on(that.eventName, resize);
         },
-        _resize: function(){
-            var that = this;
-
-            that.index = that.getIndex();
-            that.refresh();
-        },
-        /**
-         * 根据索引计算下张图片的位置    
-         * @param  {Number} dir  方向：1 表示从左向右滑动，-1表示从右向左滑动
-         * @param {Number} index 
-         */
         _loopItem: function( dir, index ){
             var that = this,
                 items = that.items,
@@ -98,17 +176,10 @@
                 .css('left', target);
 
         },
-        _start: function(e){
-            var touche = e.touches[0];
-
-            $.extend(this.start, {
-                x: touche.pageX,
-                y: touche.pageY,
-                time: Date.now()
-            });
-
-            this.move = {};
-        },
+        /**
+         * 自动播放slider
+         * @private
+         */
         _play: function(){
             var that = this;
 
@@ -120,66 +191,37 @@
                 that.timer = setTimeout(__inner, that.interval);
             }, that.interval);
         },
-        _move: function(e){
-            var that = this,
-                touche = e.touches[0],
-                start = that.start,
-                move = that.move;
-
-            move.x = touche.pageX - start.x;
-            move.y = touche.pageY - start.y;
-
-            // 当x方向移动值大于y方向的，才认为是左右滑动
-            if( Math.abs(move.x) > Math.abs(move.y) ){
-                if( that.timer != null ){
-                    clearTimeout(that.timer);
-                    that.timer = null;
-                }
-
-                if( !that.moving ){
-                    var dir = move.x >= 0 ? 1 : -1;
-                    that._loopItem(dir, that.index);
-                }
-                that.moving = true;
-                translate3d(that.container, 0, that.posX + move.x);
-            } else {
-                e.preventDefault();
-            }
-        },
-        _end: function(){
-            var that = this,
-                diff = 0,
-                absMoveX = Math.abs(that.move.x),
-                time = Date.now() - that.start.time;
-
-            // 滑动持续时间小于200ms，判定为快速滑动
-            if( time < 200 ){
-                //快速滑动时候，只要移动的距离超过30px则视为需要变更
-                diff = absMoveX > 30 ? 1 : 0;
-            } else {
-                //慢速滑动，移动的距离超过总距离的50%则视为需要变更
-                diff = Math.round(absMoveX / that.width);
-            }
-
-            if( diff ){
-                if( that.move.x > 0 ){
-                    that.index -= 1;
-                } else {
-                    that.index += 1;
-                }
-            }
-            that._toIndex(that.duration);
-
-            that.moving = false;
-        },
+        /**
+         * 跳转到指定索引
+         * @private
+         * @param {Number} duration 动画持续时间，当不传的时候为0
+         */
         _toIndex: function( duration ){
             var that = this,
                 pos = that.posX = -(that.width * that.index);
 
+            that.lazyload && that._loadImg();
             translate3d(that.container, duration || 0, pos);
         },
         /**
-         * 刷新每个图片的位置及宽度
+         * 加载图片
+         * @private
+         */
+        _loadImg: function(){
+            var that = this,
+                //取当前索引对应的图像
+                $el = that.items.eq(that.getIndex()),
+                loaded = $el.data('loaded');
+
+            // 只加载一次
+            if( !loaded ){
+                var $img = $el.find('img['+ that.attribute +']');
+                $img.prop('src', $img.attr(that.attribute));
+                $el.data('loaded', true);
+            }
+        },
+        /**
+         * 刷新slider 包括图像大小及位置的重新计算
          * @public
          */
         refresh: function(){
@@ -200,8 +242,8 @@
         },
         /**
          * 移动到指定索引位置
-         * @param {Number} to 索引值
          * @public
+         * @param {Number} to 索引值
          */
         slideTo: function( to ){
             var that = this,
@@ -216,8 +258,8 @@
         },
         /**
          * 获取当前索引值
-         * @return {Number} 索引值
          * @public
+         * @return {Number} 索引值
          */
         getIndex: function(){
             var that = this;
@@ -232,7 +274,7 @@
                 $el = that.$el;
 
             $el.removeData('__slider').off();
-            $win.off('resize' + that.ns);
+            $win.off(that.eventName);
         }
     }
 
@@ -241,10 +283,10 @@
      * @param  {Element} el      
      * @param  {Number} duration 动画持续时间
      * @param  {Number} x        位置
-     * @inner
+     * @private
      */
     function translate3d( el, duration, x ){
-        el.style.cssText += prefix + 'transition: transform '+ duration +'ms ease;'
+        el.style.cssText += prefix + 'transition: '+ prefix +'transform '+ duration +'ms ease;'
                 + prefix + 'transform: translate3d('
                 + x + 'px,0,0)';
     }
@@ -264,6 +306,8 @@
      * </div>
      * @param {Object} options 参数集合
      * @param {Boolean} options.lazyload 是否开启延迟加载，默认false
+     * @param {String} options.placeholder 当开启延迟加载时有效，用于设置占位符
+     * @param {String} options.attribute 当开启延迟加载时有效，用于设置图像真实的url存储在哪个属性中，默认使用data-url
      * @param {Number} options.index 初始化索引位置，从0开始，默认0
      * @param {Number} options.duration 动画持续时间
      * @param {Boolean} options.autoplay 是否开启自动滑动，默认false
@@ -308,4 +352,4 @@
     }
     _slider.version = VERSION;
 
-})(Zepto);
+})(Zepto, window);
