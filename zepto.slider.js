@@ -96,22 +96,16 @@
                     move.x = touche.pageX - start.x;
                     move.y = touche.pageY - start.y;
 
-                    // 当x方向移动值大于y方向的，才认为是左右滑动
-                    if( Math.abs(move.x) > Math.abs(move.y) ){
-                        if( that.timer != null ){
-                            clearTimeout(that.timer);
-                            that.timer = null;
-                        }
-
-                        if( !that.moving ){
-                            var dir = move.x >= 0 ? 1 : -1;
-                            that._loopItem(dir, that.index);
-                        }
-                        that.moving = true;
-                        translate3d(that.container, 0, that.posX + move.x);
-                    } else {
-                        e.preventDefault();
+                    if( that.timer != null ){
+                        clearTimeout(that.timer);
+                        that.timer = null;
                     }
+                    if( !that.moving ){
+                        var dir = move.x >= 0 ? 1 : -1;
+                        that._loop(dir, that.index);
+                    }
+                    that.moving = true;
+                    translate3d(that.container, 0, that.posX + move.x);
                 },
                 /**
                  * touchend事件句柄
@@ -119,21 +113,26 @@
                  * @param  {Object} e 
                  */
                 end = function(e){
-                    var diff = 0,
-                        absMoveX = Math.abs(that.move.x),
+                    var isMove = false,
+                        move = that.move,
+                        absMoveX = Math.abs(move.x),
+                        absMoveY = Math.abs(move.y),
                         time = Date.now() - that.start.time;
 
-                    // 滑动持续时间小于200ms，判定为快速滑动
-                    if( time < 200 ){
-                        //快速滑动时候，只要移动的距离超过30px则视为需要变更
-                        diff = absMoveX > 30 ? 1 : 0;
-                    } else {
-                        //慢速滑动，移动的距离超过总距离的50%则视为需要变更
-                        diff = Math.round(absMoveX / that.width);
+                    // 当x方向移动值大于y方向的，才认为是左右滑动
+                    if( absMoveX >= absMoveY ) {
+                        // 滑动持续时间小于200ms，判定为快速滑动
+                        if( time < 200 ){
+                            //快速滑动时候，只要移动的距离超过30px则视为需要变更
+                            isMove = absMoveX > 30;
+                        } else {120
+                            //慢速滑动，移动的距离超过总距离的50%则视为需要变更
+                            isMove = !!Math.round(absMoveX / that.width);
+                        }
                     }
 
-                    if( diff ){
-                        if( that.move.x > 0 ){
+                    if( isMove ){
+                        if( move.x > 0 ){
                             that.index -= 1;
                         } else {
                             that.index += 1;
@@ -164,7 +163,7 @@
 
             $win.on(that.eventName, resize);
         },
-        _loopItem: function( dir, index ){
+        _loop: function( dir, index ){
             var that = this,
                 items = that.items,
                 length = items.length,
@@ -186,7 +185,7 @@
             clearTimeout(that.timer);
             that.timer = setTimeout(function __inner(){
                 that.index++;
-                that._loopItem(1, that.index + 1);
+                that._loop(1, that.index + 1);
                 that._toIndex(that.duration);
                 that.timer = setTimeout(__inner, that.interval);
             }, that.interval);
