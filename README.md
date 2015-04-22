@@ -21,21 +21,25 @@
 ## Methods
 ### destroy  
 销毁当前实例  
+
 ```js
 $('#slider').slider('option', 'destroy');
 ```
 ### slideTo  
 设置slider的索引值  
+
 ```js
 $('#slider').slider('option', 'slideTo', 1);
 ```
 ### getIndex  
 获取slider当前的索引值  
+
 ```js
 $('#slider').slider('option', 'getIndex');
 ```
 ### refresh  
-刷新整个slider  
+刷新slider  
+
 ```js
 $('#slider').slider('option', 'refresh');
 ```
