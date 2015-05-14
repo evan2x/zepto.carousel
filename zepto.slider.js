@@ -119,13 +119,13 @@
                         absMoveY = Math.abs(move.y),
                         time = Date.now() - that.start.time;
 
-                    // 当x方向移动值大于y方向的，才认为是左右滑动
+                    // 当x方向移动值大于等于y方向，才认为是左右滑动
                     if( absMoveX >= absMoveY ) {
                         // 滑动持续时间小于200ms，判定为快速滑动
                         if( time < 200 ){
                             //快速滑动时候，只要移动的距离超过30px则视为需要变更
                             isMove = absMoveX > 30;
-                        } else {120
+                        } else {
                             //慢速滑动，移动的距离超过总距离的50%则视为需要变更
                             isMove = !!Math.round(absMoveX / that.width);
                         }
