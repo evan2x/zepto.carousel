@@ -73,11 +73,11 @@
                  * @param  {Object} e 
                  */
                 start = function(e){
-                    var touche = e.touches[0];
+                    var touch = e.touches[0];
 
                     $.extend(that.start, {
-                        x: touche.pageX,
-                        y: touche.pageY,
+                        x: touch.pageX,
+                        y: touch.pageY,
                         time: Date.now()
                     });
 
@@ -89,12 +89,12 @@
                  * @param  {Object} e 
                  */
                 move = function(e){
-                    var touche = e.touches[0],
+                    var touch = e.touches[0],
                         start = that.start,
                         move = that.move;
 
-                    move.x = touche.pageX - start.x;
-                    move.y = touche.pageY - start.y;
+                    move.x = touch.pageX - start.x;
+                    move.y = touch.pageY - start.y;
 
                     if( that.timer != null ){
                         clearTimeout(that.timer);
