@@ -3,36 +3,38 @@
  * @author evan(evan2zaw@gmail.com)
  * @date 2015/02/11
  * @update 2015/4/22
- * @version 0.0.2-alpha
+ * @version 0.1.0
  * @license MIT
  */
+
+/* global Zepto */
 
 (function( $, win ){
     'use strict';
 
-    var VERSION = '0.0.2-alpha',
+    var VERSION = '0.1.0',
         nsid = 0,
         $win = $(win),
         prefix = $.fx.cssPrefix,
-        _slice = Array.prototype.slice,
-        placeholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvIAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==';
+        _slice = Array.prototype.slice;
 
     function Slider( $el, opts ){
         opts || (opts = {});
 
-        if( !$el || $el.length === 0 ) return;
+        if( !$el || $el.length === 0 ) return; //jshint ignore:line
         $.extend(this, {
             $el: $el,
             items: $el.children(),
             lazyload: opts.lazyload || false,
-            placeholder: opts.placeholder || placeholder,
             attribute: opts.attribute || 'data-src',
             autoplay: opts.autoplay || false,
             interval: opts.interval || 3000,
             index: opts.index || 0,
             duration: opts.duration || 600,
-            start: {}
+            start: {},
+            easing: opts.easing || 'ease'
         });
+
         this.eventName = 'onorientationchange' in win ? 'orientationchange' : 'resize' + '.slider' + (nsid++);
         this._init();
     }
@@ -44,21 +46,23 @@
          * @private
          */
         _init: function(){
+
             var that = this;
+
             that.container = document.createElement('div');
+            that.container.className += 'slider-container';
             that.items.wrapAll(that.container);
+
+            if( that.items.length < 2 ){
+                that._loadImg();
+                that.refresh();
+                return;
+            }
 
             that._initEvents();
 
             //开启自动滑动
             that.autoplay && that._play();
-            if( that.lazyload ){
-                var selector = 'img['+ that.attribute +']';
-
-                that.items
-                    .find(selector)
-                    .prop('src', that.placeholder);
-            }
             that.refresh();
         },
         /**
@@ -100,19 +104,27 @@
                         clearTimeout(that.timer);
                         that.timer = null;
                     }
+
                     if( !that.moving ){
                         var dir = move.x >= 0 ? 1 : -1;
                         that._loop(dir, that.index);
                     }
                     that.moving = true;
-                    translate3d(that.container, 0, that.posX + move.x);
+                    translate3d({
+                        el: that.container,
+                        posX: that.posX + move.x,
+                        duration: 0,
+                        easing: that.easing
+                    });
+
+                    e.preventDefault();
                 },
                 /**
                  * touchend事件句柄
                  * @event
                  * @param  {Object} e 
                  */
-                end = function(e){
+                end = function(){
                     var isMove = false,
                         move = that.move,
                         absMoveX = Math.abs(move.x),
@@ -150,6 +162,9 @@
                     that.refresh();
                 };
 
+            
+            
+
             that.$el.on({
                 touchstart: start,
                 touchmove: move,
@@ -160,7 +175,7 @@
                     that._play();
                 }
             });
-
+            
             $win.on(that.eventName, resize);
         },
         _loop: function( dir, index ){
@@ -197,10 +212,15 @@
          */
         _toIndex: function( duration ){
             var that = this,
-                pos = that.posX = -(that.width * that.index);
+                posX = that.posX = -(that.width * that.index);
 
             that.lazyload && that._loadImg();
-            translate3d(that.container, duration || 0, pos);
+            translate3d({
+                el: that.container,
+                posX: posX,
+                duration: duration,
+                easing: that.easing
+            });
         },
         /**
          * 加载图片
@@ -234,7 +254,6 @@
                 $(item).css({
                     position: 'absolute',
                     left: index * that.width,
-                    top: 0,
                     width: that.width
                 });
             });
@@ -275,7 +294,7 @@
             $el.removeData('__slider').off();
             $win.off(that.eventName);
         }
-    }
+    };
 
     /**
      * 移动一个元素
@@ -284,10 +303,12 @@
      * @param  {Number} x        位置
      * @private
      */
-    function translate3d( el, duration, x ){
-        el.style.cssText += prefix + 'transition: '+ prefix +'transform '+ duration +'ms ease;'
-                + prefix + 'transform: translate3d('
-                + x + 'px,0,0)';
+    function translate3d(opts){
+        var el = opts.el;
+        if( el && el.nodeType === 1 ){
+            el.style[prefix +'transition'] = prefix +'transform '+ opts.duration +'ms '+ opts.easing;
+            el.style[prefix +'transform'] = 'translate3d('+ opts.posX +'px,0,0)';
+        }
     }
 
     /**
@@ -305,7 +326,6 @@
      * </div>
      * @param {Object} options 参数集合
      * @param {Boolean} options.lazyload 是否开启延迟加载，默认false
-     * @param {String} options.placeholder 当开启延迟加载时有效，用于设置占位符
      * @param {String} options.attribute 当开启延迟加载时有效，用于设置图像真实的url存储在哪个属性中，默认使用data-url
      * @param {Number} options.index 初始化索引位置，从0开始，默认0
      * @param {Number} options.duration 动画持续时间
@@ -348,7 +368,7 @@
         }
         
         return this;
-    }
+    };
     _slider.version = VERSION;
 
 })(Zepto, window);

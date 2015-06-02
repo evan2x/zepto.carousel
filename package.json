@@ -1,6 +1,6 @@
 {
   "name": "zepto.slider",
-  "version": "0.0.2-alpha",
+  "version": "0.1.0",
   "description": "移动端slider",
   "main": "zepto.slider.js",
   "scripts": {
@@ -20,8 +20,8 @@
   },
   "homepage": "https://github.com/evan2x/zepto.slider",
   "devDependencies": {
-    "gulp": "^3.8.11",
-    "gulp-rename": "^1.2.0",
-    "gulp-uglify": "^1.1.0"
+    "gulp": "^3.9.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.2.0"
   }
 }

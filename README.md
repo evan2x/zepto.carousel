@@ -2,6 +2,8 @@
 
 此插件依赖 [zepto.js](http://zeptojs.com/)
 
+> 开启延迟加载建议设置src属性为小图片，推荐使用base64，避免发起HTTP请求
+
 ## Options
 
 `index` {Number} 初始索引位置，默认： `0`
@@ -13,8 +15,6 @@
 `interval` {Number} 自动滑动间隔时间，默认：`3000ms`
 
 `lazyload` {Boolean} 是否开启延迟加载，默认：`false`
-
-`placeholder` {String} 设置占位符，当开启延迟加载时有效，默认： `空白`
 
 `attribute` {String} 设置图像真实的url存储在哪个属性中，当开启延迟加载时有效，默认：`data-url`
 
