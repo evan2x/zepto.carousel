@@ -1,0 +1,24 @@
+{
+    "curly": true,
+    "eqeqeq": true,
+    "eqnull": true,
+    "forin": true,
+    "freeze": true,
+    "funcscope": true,
+    "globals": [],
+    "maxdepth": 10,
+    "maxparams": 4,
+    "noarg": true,
+    "undef": true,
+    "unused": true,
+
+    "boss": true,
+    "expr": true,
+    "lastsemic": true,
+    "strict": true,
+    "devel": true,
+    "jquery": true,
+
+    "browserify": true,
+    "browser": true
+}
