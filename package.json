@@ -1,6 +1,6 @@
 {
   "name": "zepto.slider",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "移动端slider",
   "main": "zepto.slider.js",
   "scripts": {

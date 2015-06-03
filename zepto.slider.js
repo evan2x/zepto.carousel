@@ -1,9 +1,7 @@
 /**
  * @desc  slider插件
  * @author evan(evan2zaw@gmail.com)
- * @date 2015/02/11
- * @update 2015/4/22
- * @version 0.1.0
+ * @version 0.1.1
  * @license MIT
  */
 
@@ -12,7 +10,7 @@
 (function( $, win ){
     'use strict';
 
-    var VERSION = '0.1.0',
+    var VERSION = '0.1.1',
         nsid = 0,
         $win = $(win),
         prefix = $.fx.cssPrefix,
@@ -50,7 +48,7 @@
             var that = this;
 
             that.container = document.createElement('div');
-            that.container.className += 'slider-container';
+            that.container.className = 'slider-container';
             that.items.wrapAll(that.container);
 
             if( that.items.length < 2 ){
@@ -162,9 +160,6 @@
                     that.refresh();
                 };
 
-            
-            
-
             that.$el.on({
                 touchstart: start,
                 touchmove: move,
@@ -234,6 +229,7 @@
 
             // 只加载一次
             if( !loaded ){
+
                 var $img = $el.find('img['+ that.attribute +']');
                 $img.prop('src', $img.attr(that.attribute));
                 $el.data('loaded', true);
@@ -306,8 +302,8 @@
     function translate3d(opts){
         var el = opts.el;
         if( el && el.nodeType === 1 ){
-            el.style[prefix +'transition'] = prefix +'transform '+ opts.duration +'ms '+ opts.easing;
-            el.style[prefix +'transform'] = 'translate3d('+ opts.posX +'px,0,0)';
+            el.style.cssText = prefix +'transition: '+ prefix +'transform '+ opts.duration +'ms '+ opts.easing +';'+
+                                prefix +'transform: translate3d('+ opts.posX +'px,0,0)';
         }
     }
 
