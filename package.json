@@ -1,10 +1,10 @@
 {
   "name": "zepto.slider",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "移动端slider",
   "main": "zepto.slider.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "./node_modules/.bin/uglifyjs zepto.slider.js -o zepto.slider.min.js -c"
   },
   "repository": {
     "type": "git",
@@ -20,8 +20,6 @@
   },
   "homepage": "https://github.com/evan2x/zepto.slider",
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.2.0"
+    "uglify-js": "^2.6.1"
   }
 }

@@ -1,370 +1,429 @@
 /**
- * @desc  slider插件
- * @author evan(evan2zaw@gmail.com)
- * @version 0.1.1
- * @license MIT
- */
+* @desc  slider插件
+* @author evan(evan2zaw@gmail.com)
+* @version 0.1.1
+* @license MIT
+*/
 
 /* global Zepto */
 
 (function( $, win ){
-    'use strict';
+  'use strict';
 
-    var VERSION = '0.1.1',
-        nsid = 0,
-        $win = $(win),
-        prefix = $.fx.cssPrefix,
-        _slice = Array.prototype.slice;
+  var VERSION = '0.1.1',
+    nsid = 0,
+    $win = $(win),
+    cssPrefix = $.fx.cssPrefix,
+    transitionEnd = $.fx.transitionEnd,
+    _slice = Array.prototype.slice;
 
-    function Slider( $el, opts ){
-        opts || (opts = {});
+  function Slider( $el, options ){
+    options = options || {};
 
-        if( !$el || $el.length === 0 ) return; //jshint ignore:line
-        $.extend(this, {
-            $el: $el,
-            items: $el.children(),
-            lazyload: opts.lazyload || false,
-            attribute: opts.attribute || 'data-src',
-            autoplay: opts.autoplay || false,
-            interval: opts.interval || 3000,
-            index: opts.index || 0,
-            duration: opts.duration || 600,
-            start: {},
-            easing: opts.easing || 'ease'
-        });
-
-        this.eventName = 'onorientationchange' in win ? 'orientationchange' : 'resize' + '.slider' + (nsid++);
-        this._init();
-    }
-
-    Slider.prototype = {
-        constructor: Slider,
-        /**
-         * 初始化
-         * @private
-         */
-        _init: function(){
-
-            var that = this;
-
-            that.container = document.createElement('div');
-            that.container.className = 'slider-container';
-            that.items.wrapAll(that.container);
-
-            if( that.items.length < 2 ){
-                that._loadImg();
-                that.refresh();
-                return;
-            }
-
-            that._initEvents();
-
-            //开启自动滑动
-            that.autoplay && that._play();
-            that.refresh();
-        },
-        /**
-         * 初始化事件绑定
-         * @private
-         */
-        _initEvents: function(){
-            var that = this,
-                /**
-                 * touchstart事件句柄   
-                 * @event 
-                 * @param  {Object} e 
-                 */
-                start = function(e){
-                    var touch = e.touches[0];
-
-                    $.extend(that.start, {
-                        x: touch.pageX,
-                        y: touch.pageY,
-                        time: Date.now()
-                    });
-
-                    that.move = {};
-                },
-                /**
-                 * touchmove事件句柄
-                 * @event
-                 * @param  {Object} e 
-                 */
-                move = function(e){
-                    var touch = e.touches[0],
-                        start = that.start,
-                        move = that.move;
-
-                    move.x = touch.pageX - start.x;
-                    move.y = touch.pageY - start.y;
-
-                    if( that.timer != null ){
-                        clearTimeout(that.timer);
-                        that.timer = null;
-                    }
-
-                    if( !that.moving ){
-                        var dir = move.x >= 0 ? 1 : -1;
-                        that._loop(dir, that.index);
-                    }
-                    that.moving = true;
-                    translate3d({
-                        el: that.container,
-                        posX: that.posX + move.x,
-                        duration: 0,
-                        easing: that.easing
-                    });
-
-                    e.preventDefault();
-                },
-                /**
-                 * touchend事件句柄
-                 * @event
-                 * @param  {Object} e 
-                 */
-                end = function(){
-                    var isMove = false,
-                        move = that.move,
-                        absMoveX = Math.abs(move.x),
-                        absMoveY = Math.abs(move.y),
-                        time = Date.now() - that.start.time;
-
-                    // 当x方向移动值大于等于y方向，才认为是左右滑动
-                    if( absMoveX >= absMoveY ) {
-                        // 滑动持续时间小于200ms，判定为快速滑动
-                        if( time < 200 ){
-                            //快速滑动时候，只要移动的距离超过30px则视为需要变更
-                            isMove = absMoveX > 30;
-                        } else {
-                            //慢速滑动，移动的距离超过总距离的50%则视为需要变更
-                            isMove = !!Math.round(absMoveX / that.width);
-                        }
-                    }
-
-                    if( isMove ){
-                        if( move.x > 0 ){
-                            that.index -= 1;
-                        } else {
-                            that.index += 1;
-                        }
-                    }
-                    that._toIndex(that.duration);
-
-                    that.moving = false;
-                },
-                /**
-                 * 视窗宽高变化时触发的事件句柄
-                 */
-                resize = function(){
-                    that.index = that.getIndex();
-                    that.refresh();
-                };
-
-            that.$el.on({
-                touchstart: start,
-                touchmove: move,
-                touchend: end
-            })
-            .on($.fx.transitionEnd, function(){
-                if( that.autoplay && that.timer == null ){
-                    that._play();
-                }
-            });
-            
-            $win.on(that.eventName, resize);
-        },
-        _loop: function( dir, index ){
-            var that = this,
-                items = that.items,
-                length = items.length,
-                target = that.width * (index - dir), 
-                nextIndex = index + (-dir);
-
-            items
-                .eq(nextIndex % length)
-                .css('left', target);
-
-        },
-        /**
-         * 自动播放slider
-         * @private
-         */
-        _play: function(){
-            var that = this;
-
-            clearTimeout(that.timer);
-            that.timer = setTimeout(function __inner(){
-                that.index++;
-                that._loop(1, that.index + 1);
-                that._toIndex(that.duration);
-                that.timer = setTimeout(__inner, that.interval);
-            }, that.interval);
-        },
-        /**
-         * 跳转到指定索引
-         * @private
-         * @param {Number} duration 动画持续时间，当不传的时候为0
-         */
-        _toIndex: function( duration ){
-            var that = this,
-                posX = that.posX = -(that.width * that.index);
-
-            that.lazyload && that._loadImg();
-            translate3d({
-                el: that.container,
-                posX: posX,
-                duration: duration,
-                easing: that.easing
-            });
-        },
-        /**
-         * 加载图片
-         * @private
-         */
-        _loadImg: function(){
-            var that = this,
-                //取当前索引对应的图像
-                $el = that.items.eq(that.getIndex()),
-                loaded = $el.data('loaded');
-
-            // 只加载一次
-            if( !loaded ){
-
-                var $img = $el.find('img['+ that.attribute +']');
-                $img.prop('src', $img.attr(that.attribute));
-                $el.data('loaded', true);
-            }
-        },
-        /**
-         * 刷新slider 包括图像大小及位置的重新计算
-         * @public
-         */
-        refresh: function(){
-            var that = this;
-
-            that.width = that.$el.width();
-            that.posX = -(that.width * that.index);
-            that._toIndex();
-
-            that.items.each(function( index, item ){
-                $(item).css({
-                    position: 'absolute',
-                    left: index * that.width,
-                    width: that.width
-                });
-            });
-        },
-        /**
-         * 移动到指定索引位置
-         * @public
-         * @param {Number} to 索引值
-         */
-        slideTo: function( to ){
-            var that = this,
-                max = that.items.length;
-
-            to < 0 && (to = 0);
-            to >= max && (to = max - 1);
-            
-            that.index = to;
-            that.refresh();
-            that._toIndex();
-        },
-        /**
-         * 获取当前索引值
-         * @public
-         * @return {Number} 索引值
-         */
-        getIndex: function(){
-            var that = this;
-            return that.index % that.items.length;
-        },
-        /**
-         * 销毁当前实例
-         * @public
-         */
-        destroy: function(){
-            var that = this, 
-                $el = that.$el;
-
-            $el.removeData('__slider').off();
-            $win.off(that.eventName);
-        }
+    this.options = {
+      lazyload: options.lazyload || false,
+      attribute: options.attribute || 'data-src',
+      autoplay: options.autoplay || false,
+      interval: options.interval || 3000,
+      index: options.index || 0,
+      duration: options.duration || 400,
+      easing: options.easing || 'ease',
+      vertical: options.vertical || false
     };
 
+    this.$el = $el;
+    this.index = this.options.index;
+    this.items = $el.children();
+    this.eventName = 'onorientationchange' in win ? 'orientationchange' : 'resize' + '.slider' + (nsid++);
+
+    this._init();
+  }
+
+  Slider.prototype = {
+    constructor: Slider,
     /**
-     * 移动一个元素
-     * @param  {Element} el      
-     * @param  {Number} duration 动画持续时间
-     * @param  {Number} x        位置
+     * 初始化
      * @private
      */
-    function translate3d(opts){
-        var el = opts.el;
-        if( el && el.nodeType === 1 ){
-            el.style.cssText = prefix +'transition: '+ prefix +'transform '+ opts.duration +'ms '+ opts.easing +';'+
-                                prefix +'transform: translate3d('+ opts.posX +'px,0,0)';
+    _init: function(){
+      this.container = document.createElement('div');
+      this.container.className = 'slider-container';
+      this.items.wrapAll(this.container);
+      this.position = {x: 0, y: 0};
+
+      if(this.items.length < 2){
+          this._loadImage();
+      } else {
+        this.$el.on('touchstart', this._handler.start.bind(this));
+        $win.on(this.eventName, this.refresh.bind(this));
+
+        if (this.options.autoplay) {
+          this._play();
         }
-    }
+      }
+
+      this.refresh();
+    },
+    /**
+     * 事件句柄集合
+     * @private
+     * @type {Object}
+     */
+    _handler: {
+      start: function(e){
+        if(e.touches.length > 1) return false;
+        var touch = e.touches[0],
+          handler = this._handler;
+
+        this._stop();
+        this.start = {
+          x: touch.pageX,
+          y: touch.pageY,
+          time: Date.now()
+        };
+
+        this.offset = {x: 0, y: 0};
+        this.changed = false;
+
+        this.$el.on({
+          touchmove: handler.move.bind(this),
+          touchend: handler.end.bind(this),
+          touchcancel: handler.end.bind(this)
+        });
+
+        this.$el.trigger('dragstart', {
+          index: this.getIndex(),
+          items: this.items
+        });
+      },
+
+      move: function(e){
+        if(e.touches.length > 1) return false;
+        var touch = e.touches[0],
+          start = this.start,
+          offset = this.offset,
+          position = this.position,
+          prev = this.prev,
+          // 检测手指是否向右移动
+          rightMoved = this.options.vertical ? touch.pageY > start.y : touch.pageX > start.x;
+
+        offset.x = touch.pageX - start.x;
+        offset.y = touch.pageY - start.y;
+
+        if (this.prevRightMoved !== rightMoved || !this.dragging) {
+          var dir = this._direction();
+          this._updateItemPos(this.index + dir);
+
+          var idx = this.getIndex();
+          this.$el.trigger('drag', {
+            dir: dir,
+            index: idx,
+            items: this.items
+          });
+        }
+
+        if (!this.dragging) {
+          this.dragging = true;
+        }
+
+        this._translate({
+          x: position.x + offset.x,
+          y: position.y + offset.y
+        });
+
+        this.prevRightMoved = rightMoved;
+        e.preventDefault();
+      },
+
+      end: function(e){
+        this.$el.off('touchmove touchend touchcancel');
+
+        var changed = false,
+          offset = this.offset,
+          absMoveX = Math.abs(offset.x),
+          absMoveY = Math.abs(offset.y),
+          slideTime = Date.now() - this.start.time,
+          dir = 0,
+          vertical = this.options.vertical;
+
+        if (slideTime < 200) {
+          changed = vertical ? absMoveY > 30 : absMoveX > 30;
+        } else {
+          changed = !!Math.round(vertical ? absMoveY / this.height : absMoveX / this.width);
+        }
+
+        if (changed) {
+          dir = this._direction();
+          this.index += dir;
+        }
+
+        var idx = this.getIndex();
+        this.$el.trigger('dragend', {
+          dir: dir,
+          index: idx,
+          items: this.items
+        });
+
+        this._toIndex(this.index);
+        this.dragging = false;
+      }
+    },
+    /**
+     * 移动slider位置
+     * @param {Object} opts 参数
+     * @param {Number} opts.x 横向移动距离
+     * @param {Number} opts.y 纵向移动距离
+     * @param {Number} opts.duration 动画执行时持续的时间
+     * @param {Function} callback 动画完成后的回调函数
+     */
+    _translate: function(opts, callback) {
+      var el = this.container,
+        options = this.options,
+        easing = options.easing,
+        duration = opts.duration || 0,
+        x = 0,
+        y = 0;
+
+      if (options.vertical) {
+        y = opts.y || 0;
+      } else {
+        x = opts.x || 0;
+      }
+
+      if (duration > 0) {
+        var fn = function() {
+          el.removeEventListener(transitionEnd, fn, false);
+          callback && callback.call(this);
+        }
+
+        el.addEventListener(transitionEnd, fn, false);
+      };
+
+      el.style.cssText = cssPrefix + 'transition: ' + cssPrefix + 'transform ' +
+                  duration + 'ms ' + easing + ';' + cssPrefix +
+                  'transform: translate3d(' + x + 'px,' + y + 'px,0)';
+    },
+    /**
+     * 返回手指拖拽的方向
+     * @return {Number}
+     */
+    _direction: function(){
+      var offset = this.offset,
+        movingPoint = this.options.vertical ? offset.y : offset.x;
+      return movingPoint > 0 ? -1 : movingPoint < 0 ? 1 : 0;
+    },
+    /**
+     * 更新对应子元素的位置
+     * @private
+     */
+    _updateItemPos: function( idx ){
+      var items = this.items,
+        item = items.eq(idx % items.length);
+
+      if (this.options.vertical) {
+        item.css('top', this.height * idx);
+      } else {
+        item.css('left', this.width * idx);
+      }
+    },
+    /**
+     * 自动播放slider
+     * @private
+     */
+    _play: function(){
+      var that = this,
+        opts = this.options;
+
+      clearTimeout(this.timer);
+      this.timer = setTimeout(function __inner(){
+        that.index += 1;
+        that._updateItemPos(that.index);
+        that._toIndex(that.index);
+
+        that.timer = setTimeout(__inner, opts.interval);
+      }, opts.interval);
+    },
+    /**
+     * 停止自动播放
+     * @private
+     */
+    _stop: function(){
+      if( this.timer != null ){
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+    },
+    /**
+     * 跳转到指定索引
+     * @private
+     * @param {Number} 索引值
+     * @param {Number} duration 跳转到指定索引位置时，动画执行时间
+     */
+    _toIndex: function( index, duration ){
+      var opts = this.options;
+
+      if (duration == null) {
+        duration = opts.duration;
+      }
+
+      this.position = {
+        x: parseInt(-(this.width * index), 10),
+        y: parseInt(-(this.height * index), 10)
+      }
+
+      if (opts.lazyload) {
+        this._loadImage();
+      }
+
+      this._translate({
+        x: this.position.x,
+        y: this.position.y,
+        duration: duration
+      }, function(){
+        if (opts.autoplay) {
+          this._play();
+        }
+      }.bind(this));
+    },
+    /**
+     * 加载当前this.index位置的图片
+     * @private
+     */
+    _loadImage: function(){
+      var opts = this.options,
+        $item = this.items.eq(this.getIndex()),
+        loaded = $item.data('loaded');
+
+      // 只加载一次
+      if( !loaded ){
+        var $img = $item.find('img['+ opts.attribute +']');
+        $img.prop('src', $img.attr(opts.attribute));
+        $item.data('loaded', true);
+      }
+    },
+    /**
+     * 刷新slider
+     * @public
+     */
+    refresh: function() {
+      var vertical = this.options.vertical,
+        width = this.width = this.$el.width(),
+        height = this.height = this.$el.height(),
+        properties = {
+          position: 'absolute',
+          overflow: 'hidden'
+        };
+
+      this.index = this.index % this.items.length;
+
+      this._toIndex(this.index, 0);
+
+      if (vertical) {
+        properties.height = height;
+        this.items.each(function(index, item){
+          properties.top = index * height;
+          $(item).css(properties);
+        });
+      } else {
+        properties.width = width;
+        this.items.each(function(index, item){
+          properties.left = index * width;
+          $(item).css(properties);
+        });
+      }
+
+    },
+    /**
+     * 移动到指定索引位置
+     * @public
+     * @param {Number} to 索引值
+     */
+    slideTo: function( to ){
+      var max = this.items.length;
+
+      to < 0 && (to = 0);
+      to >= max && (to = max - 1);
+
+      this.index = to;
+      this.refresh();
+      this._toIndex(to);
+    },
+    /**
+     * 获取当前索引值
+     * @public
+     * @return {Number} 索引值
+     */
+    getIndex: function(){
+      return this.index % this.items.length;
+    },
 
     /**
-     * 移动端图片轮播
-     * @example
-     * <div class="container">
-     *     <div class="slider-item">
-     *         <img src="" alt="" />
-     *         <span>说明</span>
-     *     </div>
-     *     <div class="slider-item">
-     *         <img src="" alt="" />
-     *         <span>说明</span>
-     *     </div>
-     * </div>
-     * @param {Object} options 参数集合
-     * @param {Boolean} options.lazyload 是否开启延迟加载，默认false
-     * @param {String} options.attribute 当开启延迟加载时有效，用于设置图像真实的url存储在哪个属性中，默认使用data-url
-     * @param {Number} options.index 初始化索引位置，从0开始，默认0
-     * @param {Number} options.duration 动画持续时间
-     * @param {Boolean} options.autoplay 是否开启自动滑动，默认false
-     * @param {Number} options.interval 只有在开启autoplay参数的情况下才有效，默认3000ms
+     * 销毁当前实例
+     * @public
      */
-    var _slider = $.fn.slider = function( options ){
-        var args = arguments;
+    destroy: function(){
+      this.$el.removeData('__slider__').off();
+      $win.off(this.eventName);
+    }
+  };
 
-        if( args.length === 0 || 
-            ($.isPlainObject(options) && 
-            args.length === 1)
-        ){
-            $.each(this, function(){
-                var $this = $(this);
+  /**
+   * 移动端图片轮播
+   * @example
+   * <div class="container">
+   *     <div class="slider-item">
+   *         <img src="" alt="" />
+   *         <span>说明</span>
+   *     </div>
+   *     <div class="slider-item">
+   *         <img src="" alt="" />
+   *         <span>说明</span>
+   *     </div>
+   * </div>
+   * @param {Object} options 参数集合
+   * @param {Boolean} options.lazyload 是否开启延迟加载，默认false
+   * @param {String} options.attribute 当开启延迟加载时有效，用于设置图像真实的url存储在哪个属性中，默认使用data-url
+   * @param {Number} options.index 初始化索引位置，从0开始，默认0
+   * @param {Number} options.duration 动画持续时间
+   * @param {Boolean} options.autoplay 是否开启自动滑动，默认false
+   * @param {Number} options.interval 只有在开启autoplay参数的情况下才有效，默认3000ms
+   */
+  var _slider = $.fn.slider = function( options ){
+    var args = arguments;
 
-                $this.data('__slider', new Slider($this, options));
-            });
+    if( args.length === 0 ||
+      ($.isPlainObject(options) && args.length === 1)
+    ){
 
-        } else if( options === 'option' && args.length > 1 ) {
-            var ret = [];
-            $.each(this, function(){
-                var slider = $(this).data('__slider'),
-                    method = null;
+      $.each(this, function(index, item){
+        var $item = $(item);
+        $item.data('__slider__', new Slider($item, options));
+      });
 
-                if( slider ){
-                    method = slider[args[1]];
-                    if( method && 
-                        args[1].indexOf('_') < 0 && 
-                        $.isFunction(method) 
-                    ){
-                        var ret = method.apply(slider, _slice.call(args, 2));
-                        ret != null && ret.push(ret);
-                    } else {
-                        throw new Error(args[1] + ' method does not exist.');
-                    }
-                }
-            });
-            return ret.pop();
+    } else if( options === 'option' && args.length > 1 ) {
+      var ret = [];
+      $.each(this, function(){
+        var slider = $(this).data('__slider__'),
+          method = null;
+
+        if(slider){
+          method = slider[args[1]];
+          if( method &&
+            args[1].indexOf('_') < 0 &&
+            $.isFunction(method)
+          ){
+            var ret = method.apply(slider, _slice.call(args, 2));
+            ret != null && ret.push(ret);
+          } else {
+            throw new Error(args[1] + ' method does not exist.');
+          }
         }
-        
-        return this;
-    };
-    _slider.version = VERSION;
+      });
+      return ret.pop();
+    }
+
+    return this;
+  };
+  _slider.version = VERSION;
 
 })(Zepto, window);

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <style>
+        body {
+            margin: 0;
+        }
+        #slider,
+        #slider2,
+        #slider3 {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            height: 12.5rem;
+        }
+        #slider2 {
+          background-color: #eee;
+        }
+        .slider-item > img {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h2>自动滑动</h2>
+    <div id="slider">
+        <div class="slider-item">
+            <img src="img/1.jpg" alt="" />
+        </div>
+        <div class="slider-item">
+            <img src="img/2.jpg" alt="" />
+        </div>
+        <div class="slider-item">
+            <img src="img/3.jpg" alt="" />
+        </div>
+    </div>
+    <h2>延迟加载</h2>
+    <div id="slider2">
+        <div class="slider-item">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvIAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==" data-src="img/1.jpg" alt="" />
+        </div>
+        <div class="slider-item">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvIAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==" data-src="img/2.jpg" alt="" />
+        </div>
+        <div class="slider-item">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvIAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==" data-src="img/3.jpg" alt="" />
+        </div>
+    </div>
+    <h2>垂直方向</h2>
+    <div id="slider3">
+        <div class="slider-item">
+            <img src="img/1.jpg" alt="" />
+        </div>
+        <div class="slider-item">
+            <img src="img/2.jpg" alt="" />
+        </div>
+        <div class="slider-item">
+            <img src="img/3.jpg" alt="" />
+        </div>
+    </div>
+    <script src="../deps/zepto/src/zepto.js"></script>
+    <script src="../deps/zepto/src/event.js"></script>
+    <script src="../deps/zepto/src/data.js"></script>
+    <script src="../deps/zepto/src/fx.js"></script>
+    <script src="../zepto.slider.js"></script>
+    <script>
+        (function( $ ){
+            $('#slider').slider({
+                autoplay: true
+            });
+
+            $('#slider2').slider({
+                lazyload: true,
+                index: 1
+            });
+            $('#slider3').slider({
+              vertical: true,
+              autoplay: true
+            });
+        })(Zepto);
+    </script>
+</body>
+</html>
