@@ -1,7 +1,7 @@
 /**
 * @desc  slider插件
 * @author evan(evan2zaw@gmail.com)
-* @version 0.1.1
+* @version 0.2.0
 * @license MIT
 */
 
@@ -10,7 +10,7 @@
 (function( $, win ){
   'use strict';
 
-  var VERSION = '0.1.1',
+  var VERSION = '0.2.0',
     nsid = 0,
     $win = $(win),
     cssPrefix = $.fx.cssPrefix,
