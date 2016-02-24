@@ -8,7 +8,7 @@
 
 `index` {Number} 初始索引位置，默认： `0`
 
-`duration` {Number} 动画过渡时间， 默认：`600ms`
+`duration` {Number} 动画过渡时间， 默认：`400ms`
 
 `autoplay` {Boolean} 是否自动滑动，默认：`false`
 
@@ -18,7 +18,10 @@
 
 `attribute` {String} 设置图像真实的url存储在哪个属性中，当开启延迟加载时有效，默认：`data-url`
 
+`vertical` {Boolean} 是否启用垂直方向滑动，默认：`false`
+
 ## Methods
+
 ### destroy  
 销毁当前实例  
 
@@ -59,26 +62,25 @@ $('#slider').slider('option', 'refresh');
     </div>
 </div>
 ```
+
 ```css
 body {
-    margin: 0;
+  margin: 0;
 }
 .container {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    height: 12.5rem;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  height: 12.5rem;
 }
 .slider-item > img {
-    max-width: 100%;
+  max-width: 100%;
 }
 ```
+
 ```js
 (function($){
-    $(function(){
-        $('#slider').slider();
-    });
-
+  $('#slider').slider();
 })(Zepto);
 
 ```
