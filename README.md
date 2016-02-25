@@ -51,15 +51,15 @@ $('#slider').slider('option', 'refresh');
 
 ```html
 <div id="slider">
-    <div class="slider-item">
-        <img src="1.jpg" alt="" />
-    </div>
-    <div class="slider-item">
-        <img src="2.jpg" alt="" />
-    </div>
-    <div class="slider-item">
-        <img src="3.jpg" alt="" />
-    </div>
+  <div class="slider-item">
+    <img src="1.jpg" alt="1.jpg">
+  </div>
+  <div class="slider-item">
+    <img src="2.jpg" alt="2.jpg">
+  </div>
+  <div class="slider-item">
+    <img src="3.jpg" alt="3.jpg">
+  </div>
 </div>
 ```
 
