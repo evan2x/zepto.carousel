@@ -5,8 +5,6 @@
 * @license MIT
 */
 
-/* global Zepto */
-
 (function( $, win ){
   'use strict';
 
@@ -17,6 +15,29 @@
     transitionEnd = $.fx.transitionEnd,
     _slice = Array.prototype.slice;
 
+  /**
+   * 移动端图片轮播
+   * @example
+   * <div class="container">
+   *   <div class="slider-item">
+   *     <img src="" alt="" />
+   *     <p>说明</p>
+   *   </div>
+   *   <div class="slider-item">
+   *     <img src="" alt="" />
+   *     <p>说明</p>
+   *   </div>
+   * </div>
+   * @param {Object<Zepto>} $el
+   * @param {Object} options 参数集合
+   * @param {Boolean} options.lazyload 是否开启延迟加载，默认false
+   * @param {String} options.attribute 当开启延迟加载时有效，用于设置图像真实的url存储在哪个属性中，默认使用data-url
+   * @param {Number} options.index 初始化索引位置，从0开始，默认0
+   * @param {Number} options.duration 动画持续时间，默认：400ms
+   * @param {Boolean} options.autoplay 是否开启自动滑动，默认false
+   * @param {Number} options.interval 只有在开启autoplay参数的情况下才有效，默认3000ms
+   * @param {Number} options.vertical 是否启用垂直方向滑动，默认：false
+   */
   function Slider( $el, options ){
     options = options || {};
 
@@ -33,7 +54,7 @@
 
     this.$el = $el;
     this.index = this.options.index;
-    this.items = $el.children();
+    this.items = this.$el.children();
     this.eventName = 'onorientationchange' in win ? 'orientationchange' : 'resize' + '.slider' + (nsid++);
 
     this._init();
@@ -367,27 +388,6 @@
     }
   };
 
-  /**
-   * 移动端图片轮播
-   * @example
-   * <div class="container">
-   *     <div class="slider-item">
-   *         <img src="" alt="" />
-   *         <span>说明</span>
-   *     </div>
-   *     <div class="slider-item">
-   *         <img src="" alt="" />
-   *         <span>说明</span>
-   *     </div>
-   * </div>
-   * @param {Object} options 参数集合
-   * @param {Boolean} options.lazyload 是否开启延迟加载，默认false
-   * @param {String} options.attribute 当开启延迟加载时有效，用于设置图像真实的url存储在哪个属性中，默认使用data-url
-   * @param {Number} options.index 初始化索引位置，从0开始，默认0
-   * @param {Number} options.duration 动画持续时间
-   * @param {Boolean} options.autoplay 是否开启自动滑动，默认false
-   * @param {Number} options.interval 只有在开启autoplay参数的情况下才有效，默认3000ms
-   */
   var _slider = $.fn.slider = function( options ){
     var args = arguments;
 
