@@ -412,8 +412,8 @@
             args[1].indexOf('_') < 0 &&
             $.isFunction(method)
           ){
-            var ret = method.apply(slider, _slice.call(args, 2));
-            ret != null && ret.push(ret);
+            var result = method.apply(slider, _slice.call(args, 2));
+            result != null && ret.push(result);
           } else {
             throw new Error(args[1] + ' method does not exist.');
           }
