@@ -4,7 +4,7 @@
   "description": "移动端slider",
   "main": "zepto.slider.js",
   "scripts": {
-    "build": "./node_modules/.bin/uglifyjs zepto.slider.js -o zepto.slider.min.js -c"
+    "build": "uglifyjs zepto.slider.js -o zepto.slider.min.js -c"
   },
   "repository": {
     "type": "git",
