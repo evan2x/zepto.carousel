@@ -124,7 +124,6 @@
           start = this.start,
           offset = this.offset,
           position = this.position,
-          prev = this.prev,
           // 检测手指是否向右移动
           rightMoved = this.options.vertical ? touch.pageY > start.y : touch.pageX > start.x;
 
@@ -375,7 +374,9 @@
      * @return {Number} 索引值
      */
     getIndex: function(){
-      return this.index % this.items.length;
+      var length = this.items.length;
+
+      return Math.abs((this.index + length) % length);
     },
 
     /**
