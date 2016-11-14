@@ -1,14 +1,14 @@
 {
   "name": "zepto.slider",
-  "version": "0.2.0",
-  "description": "移动端slider",
-  "main": "zepto.slider.js",
+  "version": "1.0.0",
+  "description": "移动端轮播图",
+  "main": "zepto.carousel.js",
   "scripts": {
-    "build": "uglifyjs zepto.slider.js -o zepto.slider.min.js -c"
+    "build": "uglifyjs zepto.carousel.js -o zepto.carousel.min.js -c"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/evan2x/zepto.slider.git"
+    "url": "https://github.com/evan2x/zepto.carousel.git"
   },
   "keywords": [
     "slider"
@@ -16,9 +16,12 @@
   "author": "evan",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/evan2x/zepto.slider/issues"
+    "url": "https://github.com/evan2x/zepto.carousel/issues"
   },
-  "homepage": "https://github.com/evan2x/zepto.slider",
+  "homepage": "https://github.com/evan2x/zepto.carousel",
+  "peerDependencies": {
+    "zepto": "^1.2.0"
+  },
   "devDependencies": {
     "uglify-js": "^2.6.1"
   }
