@@ -10,6 +10,8 @@
 
 `duration` {Number} 动画过渡时间， 默认：`400ms`
 
+`easing` {Number} 动画过渡效果的速度曲线，默认：`ease`
+
 `autoplay` {Boolean} 是否自动滑动，默认：`false`
 
 `interval` {Number} 自动滑动间隔时间，默认：`3000ms`
@@ -20,44 +22,49 @@
 
 `vertical` {Boolean} 是否启用垂直方向滑动，默认：`false`
 
+`loop` {Boolean} 是否启用无限循环滚动，默认：`true`
+
 ## Methods
 
 ### destroy  
 销毁当前实例  
 
 ```js
-$('#slider').slider('option', 'destroy');
+$('#carousel').carousel('option', 'destroy');
 ```
+
 ### slideTo  
-设置slider的索引值  
+滑动到指定的的索引值  
 
 ```js
-$('#slider').slider('option', 'slideTo', 1);
+$('#carousel').carousel('option', 'slideTo', 1);
 ```
-### getIndex  
-获取slider当前的索引值  
+
+### getItems
+获取轮播图中的子元素
 
 ```js
-$('#slider').slider('option', 'getIndex');
+$('#carousel').carousel('option', 'getItems');
 ```
+
 ### refresh  
-刷新slider  
+刷新轮播图，主要更新轮播图中的子元素大小
 
 ```js
-$('#slider').slider('option', 'refresh');
+$('#carousel').carousel('option', 'refresh');
 ```
 
 ## Examples
 
 ```html
-<div id="slider">
-  <div class="slider-item">
+<div id="carousel">
+  <div class="carousel-item">
     <img src="1.jpg" alt="1.jpg">
   </div>
-  <div class="slider-item">
+  <div class="carousel-item">
     <img src="2.jpg" alt="2.jpg">
   </div>
-  <div class="slider-item">
+  <div class="carousel-item">
     <img src="3.jpg" alt="3.jpg">
   </div>
 </div>
@@ -73,16 +80,15 @@ body {
   overflow: hidden;
   height: 12.5rem;
 }
-.slider-item > img {
+.carousel-item > img {
   max-width: 100%;
 }
 ```
 
 ```js
 (function($){
-  $('#slider').slider();
+  $('#carousel').carousel();
 })(Zepto);
-
 ```
 
 ## License
