@@ -1,4 +1,4 @@
-# Slider
+# Zepto Carousel
 
 此插件依赖 [zepto.js](http://zeptojs.com/)
 
