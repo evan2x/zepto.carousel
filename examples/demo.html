@@ -8,56 +8,72 @@
         body {
             margin: 0;
         }
-        #slider,
-        #slider2,
-        #slider3 {
+        #carousel,
+        #carousel2,
+        #carousel3 {
             position: relative;
             width: 100%;
             overflow: hidden;
             height: 12.5rem;
+            background-color: #eee;
         }
-        #slider2 {
-          background-color: #eee;
+
+        #carousel4 {
+          height: 200px;
+          overflow: hidden;
         }
-        .slider-item > img {
+
+        .carousel-item > img {
             max-width: 100%;
         }
     </style>
 </head>
 <body>
     <h2>自动滑动</h2>
-    <div id="slider">
-        <div class="slider-item">
+    <div id="carousel">
+        <div class="carousel-item">
             <img src="img/1.jpg" alt="" />
         </div>
-        <div class="slider-item">
+        <div class="carousel-item">
             <img src="img/2.jpg" alt="" />
         </div>
-        <div class="slider-item">
+        <div class="carousel-item">
             <img src="img/3.jpg" alt="" />
         </div>
     </div>
     <h2>延迟加载</h2>
-    <div id="slider2">
-        <div class="slider-item">
+    <div id="carousel2">
+        <div class="carousel-item">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvIAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==" data-src="img/1.jpg" alt="" />
         </div>
-        <div class="slider-item">
+        <div class="carousel-item">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvIAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==" data-src="img/2.jpg" alt="" />
         </div>
-        <div class="slider-item">
+        <div class="carousel-item">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvIAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==" data-src="img/3.jpg" alt="" />
         </div>
     </div>
-    <h2>垂直方向</h2>
-    <div id="slider3">
-        <div class="slider-item">
+    <h2>关闭无缝滑动</h2>
+    <div id="carousel3">
+        <div class="carousel-item">
             <img src="img/1.jpg" alt="" />
         </div>
-        <div class="slider-item">
+        <div class="carousel-item">
             <img src="img/2.jpg" alt="" />
         </div>
-        <div class="slider-item">
+        <div class="carousel-item">
+            <img src="img/3.jpg" alt="" />
+        </div>
+    </div>
+    <h2>垂直方向</h2>
+    <div id="carousel4">
+        <div class="carousel-item">
+            <img src="img/1.jpg" alt="" />
+        </div>
+        <div class="carousel-item">
+            <img src="img/2.jpg" alt="" />
+        </div>
+        <div class="carousel-item">
             <img src="img/3.jpg" alt="" />
         </div>
     </div>
@@ -65,22 +81,27 @@
     <script src="../deps/zepto/src/event.js"></script>
     <script src="../deps/zepto/src/data.js"></script>
     <script src="../deps/zepto/src/fx.js"></script>
-    <script src="../zepto.slider.js"></script>
+    <script src="../zepto.carousel.js"></script>
     <script>
-        (function( $ ){
-            $('#slider').slider({
-                autoplay: true
-            });
+      (function($){
+        $('#carousel').carousel({
+          autoplay: true
+        });
 
-            $('#slider2').slider({
-                lazyload: true,
-                index: 1
-            });
-            $('#slider3').slider({
-              vertical: true,
-              autoplay: true
-            });
-        })(Zepto);
+        $('#carousel2').carousel({
+          lazyload: true,
+          index: 1
+        });
+
+        $('#carousel3').carousel({
+          loop: false
+        });
+
+        $('#carousel4').carousel({
+          vertical: true
+        });
+
+      })(Zepto);
     </script>
 </body>
 </html>
