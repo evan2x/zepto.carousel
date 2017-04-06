@@ -57,7 +57,7 @@ $('#carousel').carousel('option', 'refresh');
 ## Examples
 
 ```html
-<div id="carousel">
+<div id="carousel" class="container">
   <div class="carousel-item">
     <img src="1.jpg" alt="1.jpg">
   </div>
