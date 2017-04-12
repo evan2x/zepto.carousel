@@ -1,6 +1,6 @@
 {
-  "name": "zepto.slider",
-  "version": "1.0.0",
+  "name": "zepto.carousel",
+  "version": "1.1.0",
   "description": "移动端轮播图",
   "main": "zepto.carousel.js",
   "scripts": {
@@ -11,6 +11,7 @@
     "url": "https://github.com/evan2x/zepto.carousel.git"
   },
   "keywords": [
+    "carousel",
     "slider"
   ],
   "author": "evan",
