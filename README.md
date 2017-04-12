@@ -26,32 +26,32 @@
 
 ## Methods
 
-### destroy  
-销毁当前实例  
+### destroy
+销毁当前实例
 
 ```js
-$('#carousel').carousel('option', 'destroy');
+$('#carousel').carousel('destroy');
 ```
 
-### slideTo  
-滑动到指定的的索引值  
+### slideTo
+滑动到指定的的索引值
 
 ```js
-$('#carousel').carousel('option', 'slideTo', 1);
+$('#carousel').carousel('slideTo', 1);
 ```
 
 ### getItems
 获取轮播图中的子元素
 
 ```js
-$('#carousel').carousel('option', 'getItems');
+$('#carousel').carousel('getItems');
 ```
 
-### refresh  
+### refresh
 刷新轮播图，主要更新轮播图中的子元素大小
 
 ```js
-$('#carousel').carousel('option', 'refresh');
+$('#carousel').carousel('refresh');
 ```
 
 ## Examples
