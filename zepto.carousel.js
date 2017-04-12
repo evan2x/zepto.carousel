@@ -136,7 +136,7 @@
      * 初始化, 创建一个容器用于包装所有子元素
      * @private
      */
-    _init: function() {
+    _init: function () {
       this.container = document.createElement('div');
       this.container.className = 'carousel-container';
       this.items.wrapAll(this.container);
@@ -147,7 +147,7 @@
       } else {
         this.$el.on('touchstart', this._startHandler.bind(this));
         $win.on(eventType, this.refresh.bind(this));
-        $win.on('touchmove', function(e) {
+        $win.on('touchmove', function (e) {
           if (this.$el.has(e.target).length) {
             e.preventDefault();
           }
@@ -170,7 +170,7 @@
      * @param {Number} options.easing 动画执行的缓动公式
      * @param {Function} callback 动画完成后的回调函数
      */
-    _translate: function(options, callback) {
+    _translate: function (options, callback) {
       options = options || {};
 
       var el = this.container,
@@ -180,7 +180,7 @@
         x = options.x || 0;
 
       if (duration > 0) {
-        var fn = function() {
+        var fn = function () {
           el.removeEventListener(transitionEnd, fn, false);
           $.isFunction(callback) && callback.call(this);
         }
@@ -196,7 +196,7 @@
      * 处理延迟加载的图片
      * @private
      */
-    _imageLoad: function() {
+    _imageLoad: function () {
       var options = this.options,
         $item = this.items.eq(this.index),
         loaded = $item.data('loaded');
@@ -214,7 +214,7 @@
      * @param {Number} 索引值
      * @param {Number} duration 跳转到指定索引位置时，动画执行时间
      */
-    _toIndex: function(index, duration){
+    _toIndex: function (index, duration) {
       var that = this,
         options = this.options,
         x = 0,
@@ -238,7 +238,7 @@
         x: x,
         y: y,
         duration: duration
-      }, function() {
+      }, function () {
         if (options.autoplay) that.play();
       });
     },
@@ -247,7 +247,7 @@
      * @private
      * @param {Number} index
      */
-    _positionForItemUpdate: function(index) {
+    _positionForItemUpdate: function (index) {
       var item = this.items.eq(index % this.length),
         x = 0,
         y = 0;
@@ -267,7 +267,7 @@
      * touchstart 事件处理程序
      * @private
      */
-    _startHandler: function(e) {
+    _startHandler: function (e) {
       if(e.touches.length > 1) return false;
 
       var touch = e.touches[0];
@@ -297,7 +297,7 @@
      * touchmove 事件处理程序
      * @private
      */
-    _moveHandler: function(e) {
+    _moveHandler: function (e) {
       if (e.touches.length > 1) return false;
 
       var touch = e.touches[0],
@@ -310,18 +310,18 @@
         max = this.length - 1,
         x = 0,
         y = 0,
-        forwardDrag = false, // true 手指向左/上移动，false 手指向右/下移动
+        forward = false, // true 手指向左/上移动，false 手指向右/下移动
         direction = 0;
 
       if (vertical) {
         // 计算y轴偏移量
         offset.y = touch.pageY - start.y;
-        forwardDrag = touch.pageY > start.y;
+        forward = touch.pageY > start.y;
         direction = offset2dir(offset.y);
       } else {
         // 计算x轴偏移量
         offset.x = touch.pageX - start.x;
-        forwardDrag = touch.pageX > start.x;
+        forward = touch.pageX > start.x;
         direction = offset2dir(offset.x);
       }
 
@@ -341,7 +341,7 @@
         }
       }
 
-      if (this.forwardDrag !== forwardDrag || !this.dragging) {
+      if (this.forward !== forward || !this.dragging) {
         if (loop) {
           this._positionForItemUpdate(this.realIndex + direction);
         }
@@ -365,14 +365,14 @@
       });
 
       // 记录本次拖拽方向
-      this.forwardDrag = forwardDrag;
+      this.forward = forward;
       this.dragging = true;
     },
     /**
      * touchend/touchcancel 事件处理程序
      * @private
      */
-    _endHandler: function() {
+    _endHandler: function () {
       this.$el.off('touchmove touchend touchcancel');
 
       var vertical = this.options.vertical,
@@ -422,12 +422,12 @@
      * 自动播放
      * @public
      */
-    play: function(){
+    play: function () {
       var that = this,
         options = this.options;
 
       clearTimeout(this.timer);
-      this.timer = setTimeout(function __inner(){
+      this.timer = setTimeout(function __inner() {
         that.realIndex += 1;
         that._positionForItemUpdate(that.realIndex);
         that._toIndex(that.realIndex);
@@ -439,7 +439,7 @@
      * 停止自动播放
      * @public
      */
-    stop: function(){
+    stop: function () {
       if(this.timer != null){
         clearTimeout(this.timer);
         this.timer = null;
@@ -456,7 +456,7 @@
      * 子元素位置及更新索引位置
      * @public
      */
-    refresh: function() {
+    refresh: function () {
       var vertical = this.options.vertical,
         width = this.$el.width(),
         height = this.$el.height(),
@@ -473,7 +473,7 @@
       this.realIndex = this.index;
       this._toIndex(this.realIndex, 0);
 
-      this.items.each(function(index, item){
+      this.items.each(function (index, item) {
         if (vertical) {
           properties.height = height;
           y = index * height;
@@ -491,7 +491,7 @@
      * @public
      * @param {Number} index 索引值
      */
-    slideTo: function( index ){
+    slideTo: function (index) {
       var max = this.length;
 
       index < 0 && (index = 0);
@@ -505,46 +505,45 @@
      * 销毁当前实例
      * @public
      */
-    destroy: function(){
+    destroy: function () {
       this.$el.removeData('__carousel__').off();
       $win.off(eventType);
     }
   }
 
-  var _carousel = $.fn.carousel = function( options ){
+  var _carousel = $.fn.carousel = function (options) {
     var args = arguments;
 
-    if( args.length === 0 ||
-      ($.isPlainObject(options) && args.length === 1)
-    ){
-      $.each(this, function(index, item){
+    if(args.length === 0 || ($.isPlainObject(options) && args.length === 1)){
+      $.each(this, function (index, item){
         var $item = $(item);
         $item.data('__carousel__', new Carousel($item, options));
       });
-    } else if( options === 'option' && args.length > 1 ) {
+    } else if (args.length >= 1 && typeof options === 'string') {
       var ret = [];
-      $.each(this, function(){
-        var carousel = $(this).data('__carousel__'),
-          method = null;
 
-        if(carousel){
-          method = carousel[args[1]];
-          if( method &&
-            args[1].indexOf('_') < 0 &&
-            $.isFunction(method)
+      $.each(this, function () {
+        var carousel = $(this).data('__carousel__');
+
+        if (carousel) {
+          var method = options;
+
+          if(method
+            && method.indexOf('_') === -1
+            && $.isFunction(carousel[method])
           ){
-            var result = method.apply(carousel, core_slice.call(args, 2));
-            result != null && ret.push(result);
+            ret.push(carousel[method].apply(carousel, core_slice.call(args, 1)));
           } else {
-            throw new Error(args[1] + ' method does not exist.');
+            throw new Error(method + ' method does not exist.');
           }
         }
       });
+
       return ret.pop();
     }
 
     return this;
   };
 
-  _carousel.version = '1.0.0';
+  _carousel.version = '1.1.0';
 }, window);
