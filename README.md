@@ -40,6 +40,13 @@ $('#carousel').carousel('destroy');
 $('#carousel').carousel('slideTo', 1);
 ```
 
+### getIndex
+获取轮播图当前索引
+
+```js
+$('#carousel').carousel('getIndex');
+```
+
 ### getItems
 获取轮播图中的子元素
 

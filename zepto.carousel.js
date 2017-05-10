@@ -240,6 +240,10 @@
         duration: duration
       }, function () {
         if (options.autoplay) that.play();
+        that.$el.trigger('change', {
+          index: that.index,
+          items: that.items
+        });
       });
     },
     /**
@@ -310,7 +314,7 @@
         max = this.length - 1,
         x = 0,
         y = 0,
-        forward = false, // true 手指向左/上移动，false 手指向右/下移动
+        forward = false, // true 手指向左/上(前)移动，false 手指向右/下(后)移动
         direction = 0;
 
       if (vertical) {
@@ -444,6 +448,13 @@
         clearTimeout(this.timer);
         this.timer = null;
       }
+    },
+    /**
+     * 获取当前索引
+     * @return {Number}
+     */
+    getIndex: function() {
+      return this.index;
     },
     /**
      * 获取子元素
