@@ -180,7 +180,10 @@
         x = options.x || 0;
 
       if (duration > 0) {
+        el.style[cssPrefix + 'transition'] = cssPrefix + 'transform ' + duration + 'ms ' + easing;
+
         var fn = function () {
+          el.style[cssPrefix + 'transition'] = cssPrefix + 'transform 0ms ' + easing;
           el.removeEventListener(transitionEnd, fn, false);
           $.isFunction(callback) && callback.call(this);
         }
@@ -188,9 +191,7 @@
         el.addEventListener(transitionEnd, fn, false);
       }
 
-      el.style.cssText = cssPrefix + 'transition: ' + cssPrefix + 'transform ' +
-                  duration + 'ms ' + easing + ';' + cssPrefix +
-                  'transform: translate3d(' + x + 'px,' + y + 'px,0)';
+      el.style[cssPrefix + 'transform'] = 'translate3d(' + x + 'px,' + y + 'px,0)';
     },
     /**
      * 处理延迟加载的图片
