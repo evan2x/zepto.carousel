@@ -111,7 +111,7 @@
     this.$el = $el;
     this.width = $el.width();
     this.height = $el.height();
-    this.realIndex = this.options.index;
+    this.realIndex = this.prevIndex = this.options.index;
     this.items = this.$el.children();
     this.length = this.items.length;
 
@@ -235,16 +235,20 @@
         this._imageLoad();
       }
 
+      if (this.prevIndex != index) {
+        this.prevIndex = index;
+        that.$el.trigger('change', {
+          index: that.index,
+          items: that.items
+        });
+      }
+
       this._translate({
         x: x,
         y: y,
         duration: duration
       }, function () {
         if (options.autoplay) that.play();
-        that.$el.trigger('change', {
-          index: that.index,
-          items: that.items
-        });
       });
     },
     /**
@@ -504,14 +508,16 @@
      * @param {Number} index 索引值
      */
     slideTo: function (index) {
-      var max = this.length;
+      var that = this,
+        max = this.length;
 
       index < 0 && (index = 0);
       index >= max && (index = max - 1);
 
-      this.realIndex = index;
       this.refresh();
-      this._toIndex(index);
+
+      this.realIndex = index;
+      that._toIndex(index);
     },
     /**
      * 销毁当前实例
