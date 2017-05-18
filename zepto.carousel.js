@@ -389,35 +389,38 @@
         offset = this.offset,
         moveX = Math.abs(offset.x),
         moveY = Math.abs(offset.y),
-        direction = 0,
-        changed = false,
-        min = 0,
-        max = this.length - 1,
-        timeDiff = Date.now() - this.start.time;
+        direction = 0;
 
-      if (vertical) {
-        direction = offset2dir(offset.y);
-      } else {
-        direction = offset2dir(offset.x);
-      }
+      if ((vertical && moveY > 0) || (!vertical && moveX > 0)) {
+        var changed = false,
+          min = 0,
+          max = this.length - 1,
+          timeDiff = Date.now() - this.start.time;
 
-      if (!loop && this.index === min && direction === -1) {
-        this.realIndex = min;
-      } else if (!loop && this.index === max && direction === 1) {
-        this.realIndex = max;
-      } else {
-        if (timeDiff < 200) {
-          changed = vertical ? moveY > 30 : moveX > 30;
+        if (vertical) {
+          direction = offset2dir(offset.y);
         } else {
-          changed = !!Math.round(vertical ? moveY / this.height : moveX / this.width);
+          direction = offset2dir(offset.x);
         }
 
-        if (changed) {
-          this.realIndex += direction;
+        if (!loop && this.index === min && direction === -1) {
+          this.realIndex = min;
+        } else if (!loop && this.index === max && direction === 1) {
+          this.realIndex = max;
+        } else {
+          if (timeDiff < 200) {
+            changed = vertical ? moveY > 30 : moveX > 30;
+          } else {
+            changed = !!Math.round(vertical ? moveY / this.height : moveX / this.width);
+          }
+
+          if (changed) {
+            this.realIndex += direction;
+          }
         }
+
+        this._toIndex(this.realIndex);
       }
-
-      this._toIndex(this.realIndex);
 
       this.$el.trigger('dragend', {
         direction: direction,
