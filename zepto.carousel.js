@@ -27,11 +27,6 @@
      */
     transitionEnd = $.fx.transitionEnd,
     /**
-     * 屏幕旋转事件不兼容的情况下用resize代替
-     * @type {String}
-     */
-    eventType = 'onorientationchange' in root ? 'orientationchange' : 'resize',
-    /**
      * 数组的slice方法
      * @type {Function}
      */
@@ -146,12 +141,12 @@
         this._imageLoad();
       } else {
         this.$el.on('touchstart', this._startHandler.bind(this));
-        $win.on(eventType, this.refresh.bind(this));
+        $win.on('resize', this.refresh.bind(this));
         $win.on('touchmove', function (e) {
           if (this.$el.has(e.target).length) {
             e.preventDefault();
           }
-        }.bind(this));
+        }.bind(this, { passive: false }));
 
         if (this.options.autoplay) {
           this.play();
@@ -528,7 +523,7 @@
      */
     destroy: function () {
       this.$el.removeData('__carousel__').off();
-      $win.off(eventType);
+      $win.off('resize');
     }
   }
 
