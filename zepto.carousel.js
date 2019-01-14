@@ -561,5 +561,5 @@
     return this;
   };
 
-  _carousel.version = '1.1.0';
+  _carousel.version = '1.1.1';
 }, window);
